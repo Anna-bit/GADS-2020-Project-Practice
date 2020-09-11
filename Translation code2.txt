@@ -1,0 +1,70 @@
+## LAB: Google Cloud Fundamentals: Getting Started with Big Query
+#Objectives
+In this lab, you learn how to perform the following tasks:
+	Load data from Cloud Storage into BigQuery.
+	Perform a query on the data in BigQuery.
+
+#Task 1: 
+ 1.Sign in to the Google Cloud Platform (GCP) Console and ensure that you are logged in with the right credentials.
+ Ensure that the API is enabled. To list out the services available run this:
+
+      gcloud services list --enabled
+
+ 2.To set your project within an active configuration use the following command:
+
+     gcloud config set project <project-id>
+
+At a minimum, ensure that you are granted admin permissions to perform the following tasks below on the big query. Such can be the bigquery.dataEditor/bigquery.dataOwner.
+In this lab, you should be already granted and configured with the permissions necessary to run the tasks. 
+
+#Task 2: 
+ Load data from Cloud Storage into BigQuery
+  1.Create a new dataset within your project by selecting your project in the Resources section, then clicking on CREATE DATASET on the right.
+  2.In the Create Dataset dialog, for Dataset ID, type logdata.
+  3.For Data location, select the continent closest to the region your project was created in. click Create dataset.
+
+To create a new dataset with the above specified details, run the command below on the cloud shell:
+   
+           bq mk –d –location=US --default_table_expiration 3600 logdata
+
+  4.Create a new table in the logdata to store the data from the CSV file.
+  5.Click on Create Table. On the Create Table page, in the Source section:
+  6. For Create table from, choose select Google Cloud Storage, and in the field, type gs://cloud-training/gcpfci/access_log.csv.
+      •	Verify File format is set to CSV.
+    Note: When you have created a table previously, the Create from Previous Job option allows you to quickly use your settings to create similar tables.
+   7.In the Destination section:
+      •	For Dataset name, leave logdata selected.
+      •	For Table name, type accesslog.
+      •	For Table type, Native table should be selected.
+   8.Under Schema section, for Auto detect check the Schema and input Parameters.
+   9.Accept the remaining default values and click Create Table.
+   BigQuery creates a load job to create the table and upload data into the table (this may take a few seconds).
+
+To create a new table with the above specified details linked to your google cloud storage data source, run the command below on the cloud shell:
+
+          bq mk --external_table_definition=gs://cloud-training/gcpfci/access_log.csv logdata.accesslog
+
+To load CSV data into BigQuery, enter the following command:
+
+         bq load --autodetect --source_format=CSV logdata.accesslog gs://cloud-training/gcpfci/access_log.csv
+
+You have successfully completed the second objective which is to Load Data from Cloud Storage into BigQuery.
+
+#Task 3:
+
+ 1.Perform a query on the data using the BigQuery web UI
+
+ Enter the following query and examine results: At what time of the day is the website busiest? When is it least busy?
+
+      bq query “select int64_field_6 as hour, count(*) as hitcount from logdata.accesslog group by hour”
+
+#Task 4:
+
+ 1.Perform a query on the data using the bq command
+
+ Enter the following query and examine the results: What URL offered by this web server was most popular? Which was least popular?
+
+     bq query "select string_field_10 as request, count(*) as requestcount from logdata.accesslog group by request order by requestcount desc"
+
+
+

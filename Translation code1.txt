@@ -1,0 +1,78 @@
+##LAB:Getting Started with Google Cloud Marketplace
+
+In this lab, you use Cloud Marketplace to quickly and easily deploy a LAMP stack on a Compute Engine instance. 
+The Bitnami LAMP Stack provides a complete web development environment for Linux that can be launched in one click.
+
+##Objectives
+In this lab, you will learn how to launch a solution using Cloud Marketplace.
+
+##Steps
+1.Sign in to the GCP Console.
+
+ 1.Ensure that the Compute Engine API is initialized before you can continue.This should be already configured for you in this lab.
+ To confirm the same enter the following command:
+
+     gcloud services list --enabled
+
+ 2.Other necessary API's include the Linux,Apache,PHP,MySQL which should already be configured for you in this lab to successfully carry out the deployment.
+ You can confirm that the APIs are enabled and if not consequently install as per the example below:
+ For instance,you could install Apache 2’s PHP module using this command:
+
+     sudo apt-get install libapache2-mod-php php
+
+ Execute the following command to download and update the package lists.
+
+     sudo apt-get update
+
+2.Use Cloud Marketplace to deploy a LAMP stack
+ 1.Set your environmental variables using this command:
+
+   gcloud config set compute/region us-central1
+
+   gcloud config set compute/zone us-central1-a
+
+  2.Create the virtual machine instance
+
+    gcloud compute instances create lampstack-1 --machine-type “f1-micro” --boot-disk-device-name “lampstack-vm-tmpl-boot-disk” --boot-disk-type “pd-standard” --boot-disk-size “10Gb” --subnet "default” 
+
+  3.Add firewall rule for the tags created above
+
+    gcloud compute firewall-rules create default-allow-http-https --action=ALLOW --direction=INGRESS --rules=tcp:80 --rules=tcp:443 --target-tags=http --target-tags=https 
+
+You should have now succesfully deployed a LAMP stack(Linux, Apache, MySQL, PHP).
+   
+3.Connect to the vm instance using SSH with this command:
+
+      gcloud compute ssh lampstack-1 --zone us-central1a
+
+4.In the just-created SSH window, to change the current working directory to /opt/bitnami, execute the following command:
+
+        cd /opt/bitnami
+
+5.To copy the phpinfo.php script from the installation directory to a publicly accessible location under the web server document root, execute the following command:
+
+       sudo sh –c ‘echo “<?php phpinfo() ;  ?>” > apache2/htdocs/phpinfo.php’
+
+  The phpinfo.php script displays your PHP configuration. It is often used to verify a new PHP installation.
+
+6.To close the SSH window, execute the following command:
+
+                exit
+
+7.Open a new browser tab.
+
+Generate the URL link to the SITE_ADDRESS of the instance using the following command:
+
+           gcloud app browse
+  
+8.Type the following URL, and replace SITE_ADDRESS with the URL in the site address that you have got from the above step.
+
+          http://SITE_ADDRESS/phpinfo.php
+
+A summary of the PHP configuration of your server is displayed.
+
+9.Close the phpinfo tab.
+
+CONGRATULATIONS
+You have deployed a LAMP stack to a Compute Engine Instance.
+
